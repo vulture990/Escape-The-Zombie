@@ -1,81 +1,98 @@
-package com.vulture.screen;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.vulture.App;
-import com.vulture.InputHandler.Control;
-import com.vulture.entity.Ground;
-import com.vulture.entity.Map;
-import com.vulture.entity.Player;
+package com.vulture.entity;
 
-public class Gscreen extends OtherScreenStuff {
+import com.badlogic.gdx.math.Interpolation;
 
-    private Control control;
-    private SpriteBatch batch;// this is going to reduce so much work
-    private Player player;
-    private Texture texture;// i'm going to use it in order to load and render the sprite
-    private Texture textureGRASS_1;
-    private Texture textureGRASS_2;
-    private Map map;
-    public static final int TILE=64;
-    public static final int SCALE=2;
-    public static final int SCALE_TILE=TILE*SCALE;
-    public Gscreen(App app) {
-        super(app);
-        texture = new Texture("rsc/gg.png");
-        textureGRASS_1=new Texture("rsc/grass.png");
-        textureGRASS_2=new Texture("rsc/grass2.png");
-        map=new Map(20,20);
-        batch= new SpriteBatch();
-        player=new Player(0,0,map);
-        control=new Control(player);
+public class Player {
+    public  final static float ANIMATION_TIMMING=0.7f;//
+    private int x;
+    private int y;
+//to keep track of the animation we wanna add those world cordinates to determine accurately where the sprite gonna be drawn at
+    private float xWorld,yWorld;
+// we gonna use tweening to make the mouvement smooth
+    private  int xStart,yStart;//to determine the time when the aniomation started
+    private int xFinish,yFinish;
+    private PlayerActions state;
+    private float tAnimation=0.25f;//the time the animation going to take
+    public Player(int x,int y,Map map){
+        this.x=x;
+        this.y=y;
+        // it s better at first to make  the player cordinates relatively close to the World's cordinates
+        this.xWorld=0.75f*x;
+        this.yWorld=0.75f*y;
+        map.getTile(x,y).setPlayer(this);//this one is a bit tricky
+        this.state=PlayerActions.STANDING;// as it the most natural way to make it
 
     }
-    public void dispose(){
-
+    public float getxWorld(){
+        return this.xWorld;
     }
-    public void hide(){
-
+    public float getyWorld(){
+        return this.yWorld;
     }
-// each time a frame passes show fires that s why i think it s the best place to get input from
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(control);
-    }
+    public boolean move(int dx,int dy) {
+        //a typical move (variation of position) function in 2 d plan
+        Map map=new Map(22,17);
 
-    @Override
-    public void render(float f) {
-        batch.begin();
-       // i want to render each tile
-        for(int x=0;x< map.getW();x++){
-            for(int y=0;y<map.getH();y++){
-                Texture tex;
-                if(map.getTile(x,y).getGround()== Ground.GRASS_1){
-                    tex=textureGRASS_1;
-                }
-                else{
-                    tex=textureGRASS_2;
-                }
-                batch.draw(tex,x*SCALE_TILE,y*SCALE_TILE,SCALE_TILE,SCALE_TILE);
-            }
+        if (x + dx > map.getW() || x + dx < 0 || y + dy < 0 || y + dy > map.getH()) {
+            //SETTING BOUNDARIES CONDITION
+            return false;//meaning you are out of bounds
         }
 
-        batch.draw(texture,player.getX()*SCALE_TILE,player.getY()*SCALE_TILE,TILE,TILE*1.5f);
-        batch.end();
+        if (map.getTile(x + dx, y + dy).getPlayer() != null) return false;// this condition is to make sure that the target tile isn't occupied
+        if(state!=PlayerActions.STANDING){
+            // we must add this condition  too for it to make sense
+            return false;
+        }
+        else {
+            animationInitMove(x,y,dx,dy);
+            map.getTile(x, y).setPlayer(null);
+            x += dx;
+            y += dy;
+            map.getTile(x, y).setPlayer(this);
+            return true;
+        }
     }
+    /*
+    public  boolean checkBounds(int dx,int dy) {
+        if (x + dx > map.getW() || x + dx < 0 || y + dy < 0 || y + dy > map.getH()) {//SETTING BOUNDARIES CONDITION
+            return false;//meaning you are out of bounds
+        }
 
-    @Override
-    public void resize(int width, int height) {
+        if (map.getTile(x + dx, y + dy).getPlayer() != null) return false;
+        else return true;
+}*/
+    public void animationInitMove(int x,int y,int dx,int dy){
+        this.xStart=x;
+        this.yStart=y;
+        this.xFinish=x+dx;//i love the structure it s elegant  and neat how thing fit into pieces so well
+        this.yFinish=y+dy;
+        tAnimation=0f;
+        this.xWorld=x;
+        this.yWorld=y;
+        //Last but not least at each time we move the player action enum changes therfore
+        state=PlayerActions.WALKING;
+    }
+    public void animationDestroyMove(){
+        state=PlayerActions.STANDING;
 
     }
-
-    @Override
-    public void pause() {
-
+    // now comes the tweening part where we gonna update x,y world positons
+    public void updateWorldCord(float DELTA ){
+        if(state==PlayerActions.WALKING){
+            tAnimation+=DELTA;//meaning the animating going to update each frame once (time between one frame and an other is DELTA)
+            // Here is the tweening to keep updating world cordinate at each frame
+            xWorld= Interpolation.pow2.apply(xStart,xFinish,tAnimation/ANIMATION_TIMMING);
+            yWorld= Interpolation.pow2.apply(yStart,yFinish,tAnimation/ANIMATION_TIMMING);
+            //once updated time to destroy the animation after checking ofc that the tANIMATION IS BIGGER THAN animation timming that we set so that should be out condition
+            if(tAnimation>ANIMATION_TIMMING){
+                animationDestroyMove();
+            }
+        }
     }
-
-    @Override
-    public void resume() {
-
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
     }
 }
