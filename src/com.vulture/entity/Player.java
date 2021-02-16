@@ -72,8 +72,18 @@ public class Player {
         //Last but not least at each time we move the player action enum changes therfore
         state=PlayerActions.WALKING;
     }
+    public  void reset(){
+        this.xWorld=xFinish;
+        this.yWorld=yFinish;
+        this.xStart=0;
+        this.yStart=0;
+        this.xFinish=0;
+        this.yFinish=0;
+
+    }
     public void animationDestroyMove(){
         state=PlayerActions.STANDING;
+        this.reset();
 
     }
     // now comes the tweening part where we gonna update x,y world positons
