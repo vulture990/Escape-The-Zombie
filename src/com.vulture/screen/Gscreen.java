@@ -48,7 +48,9 @@ public class Gscreen extends OtherScreenStuff {
     @Override
     public void render(float f) {
         player.updateWorldCord(f);// this is to update the player each frame
-        camera.cameraUpdate(player.getX()+0.5f,player.getY()+0.5f);//for it to be centred around the player
+        //camera.cameraUpdate(player.getX()+0.5f,player.getY()+0.5f);//for it to be centred around the player OR THE CAMERA
+        //after testing it i figured that if we centered the camera on the world cordinates it looks way cooler than the player
+        camera.cameraUpdate(player.getxWorld()+0.5f,player.getyWorld()+0.5f);
         batch.begin();
         double worldStartX=Gdx.graphics.getWidth()/2 - camera.getxScroll()*SCALE_TILE;//what this means is that given a cordinates of where the camera we can keep update it constantly for it to follow and be centred around the player
         double worldStartY=Gdx.graphics.getHeight()/2 - camera.getyScroll()*SCALE_TILE;//what this means is that given a cordinates of where the camera we can keep update it constantly for it to follow and be centred around the player
