@@ -11,18 +11,19 @@ public class Control extends InputAdapter {
     }
     public boolean keyDown(int keycode){
         boolean flag =false;
-        if(keycode== Input.Keys.UP){
-           flag= player.move(0,1);
-
-        }
-        if(keycode==Input.Keys.DOWN){
-            flag= player.move(0,-1);
-        }
-        if(keycode==Input.Keys.RIGHT) {
-            flag= player.move(1, 0);
-        }
-        if(keycode==Input.Keys.LEFT) {
+        switch (keycode){
+            case Input.Keys.UP:
+                flag= player.move(0,1);
+                break;
+            case Input.Keys.DOWN:
+                flag= player.move(0,-1);
+                break;
+            case Input.Keys.RIGHT:
+                flag= player.move(1, 0);
+                break;
+            case Input.Keys.LEFT:
              flag= player.move(-1, 0);
+             break;
         }
         return flag;// a way to ignore the event if clicked
     }
