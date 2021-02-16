@@ -3,7 +3,7 @@ package com.vulture.entity;
 import com.badlogic.gdx.math.Interpolation;
 
 public class Player {
-    public  final static float ANIMATION_TIMMING=0.7f;//
+    public  final static float ANIMATION_TIMMING=0.17f;//
     private int x;
     private int y;
 //to keep track of the animation we wanna add those world cordinates to determine accurately where the sprite gonna be drawn at
