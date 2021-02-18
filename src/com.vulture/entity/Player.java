@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 
 public class Player {
     public  final static float ANIMATION_TIMMING=0.17f;//
+    private  PlayerCordinates front;
     private int x;
     private int y;
 //to keep track of the animation we wanna add those world cordinates to determine accurately where the sprite gonna be drawn at
@@ -12,7 +13,10 @@ public class Player {
     private  int xStart,yStart;//to determine the time when the aniomation started
     private int xFinish,yFinish;
     private PlayerActions state;
+    private long tWalking;
+    private Animations animation;
     private float tAnimation=0.25f;//the time the animation going to take
+    private boolean tweak;
     public Player(int x,int y,Map map){
         this.x=x;
         this.y=y;
