@@ -105,4 +105,13 @@ public class Player {
     public int getY(){
         return y;
     }
+     public TextureRegion getSprite(){
+        if(state==PlayerActions.STANDING){
+            return animation.getStanding(front.getDx(), front.getDy());
+        }
+        else if (state==PlayerActions.WALKING){
+           // return  animation.getWalking(front.getDx(), front.getDy()).getWalking(front.getDx(), front.getDy());
+            return animation.getWalking(front.getDx(), front.getDy()).getKeyFrame(tWalking);
+        }
+    }
 }
