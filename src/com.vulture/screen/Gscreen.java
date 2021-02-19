@@ -1,13 +1,17 @@
 package com.vulture.screen;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.vulture.App;
 import com.vulture.InputHandler.Control;
 import com.vulture.entity.CameraViewPlayer;
 import com.vulture.entity.Ground;
 import com.vulture.entity.Map;
 import com.vulture.entity.Player;
+import com.vulture.entity.Animations;
 
 public class Gscreen extends OtherScreenStuff {
 
@@ -25,13 +29,27 @@ public class Gscreen extends OtherScreenStuff {
     public Gscreen(App app) {
         super(app);
         texture = new Texture("rsc/gg.png");
-        textureGRASS_1=new Texture("rsc/da.png");
-        textureGRASS_2=new Texture("rsc/gaga.png");
+        textureGRASS_1=new Texture("rsc/01.png");
+        textureGRASS_2=new Texture("rsc/DAY.png");
+        TextureAtlas atlas=app.getAssetManager().get("rsc/playerTexture/tex.atlas",TextureAtlas.class);
+        Animations animations=new Animations(
+                atlas.findRegion("front"),
+                atlas.findRegion("back"),
+                atlas.findRegion("left"),
+                atlas.findRegion("right"),
+               new Animation(0.17f/2f,atlas.findRegions("front"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.17f/2f,atlas.findRegions("back"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.17f/2f,atlas.findRegions("left"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.17f/2f,atlas.findRegions("right"), Animation.PlayMode.LOOP_PINGPONG)
+                );
+
         map=new Map(22,17);
         batch= new SpriteBatch();
-        player=new Player(0,0,map);
+
+        player=new Player(0,0,map,animations);
         control=new Control(player);
         camera =new CameraViewPlayer();
+
     }
     public void dispose(){
 
@@ -42,12 +60,15 @@ public class Gscreen extends OtherScreenStuff {
 // each time a frame passes show fires that s why i think it s the best place to get input from
     @Override
     public void show() {
+
         Gdx.input.setInputProcessor(control);
     }
 
     @Override
     public void render(float f) {
+        control.update(f);
         player.updateWorldCord(f);// this is to update the player each frame
+
         //camera.cameraUpdate(player.getX()+0.5f,player.getY()+0.5f);//for it to be centred around the player OR THE CAMERA
         //after testing it i figured that if we centered the camera on the world cordinates it looks way cooler than the player
         camera.cameraUpdate(player.getxWorld()+0.5f,player.getyWorld()+0.5f);
@@ -69,8 +90,12 @@ public class Gscreen extends OtherScreenStuff {
                 batch.draw(tex, (float) (worldStartX+x * SCALE_TILE), (float) (worldStartY+y*SCALE_TILE), SCALE_TILE, SCALE_TILE);
             }
         }
-        batch.draw(texture, (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE,TILE *1.25f);
+//        batch.draw(texture, (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE* 3 ,TILE *2.75f);
+
+        batch.draw(player.getSprite(), (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE* 3 ,TILE *2.5f);
+
         batch.end();
+
     }
 
     @Override
