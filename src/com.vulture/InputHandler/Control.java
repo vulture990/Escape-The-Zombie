@@ -2,9 +2,12 @@ package com.vulture.InputHandler;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
+
+import com.badlogic.gdx.InputProcessor;
 import com.vulture.entity.Player;
-public class Control extends InputAdapter {
+import com.vulture.entity.PlayerCoor;
+
+public class Control implements InputProcessor {
     private Player player;// implicitly created
     private boolean UP, DOWN, LEFT, RIGHT;
 
@@ -13,7 +16,7 @@ public class Control extends InputAdapter {
     }
 
     public boolean keyDown(int keycode) {
-        boolean flag = false;
+
         switch (keycode) {
             case Input.Keys.UP:
                 // flag = player.move(0, 1);
@@ -32,11 +35,11 @@ public class Control extends InputAdapter {
                 RIGHT = true;
                 break;
         }
-        return flag;// a way to ignore the event if clicked
+        return false;// a way to ignore the event if clicked
     }
 
     public boolean keyUp(int keycode) {
-        boolean flag = false;
+
         switch (keycode) {
             case Input.Keys.UP:
                 // flag = player.move(0, 1);
@@ -57,21 +60,52 @@ public class Control extends InputAdapter {
         }
         return false;
     }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
+
     public void update(float delta){
         if(UP){
-            player.move(0,1);
+            player.move(PlayerCoor.Up);
             return;
         }
         if(DOWN){
-            player.move(0,-1);
+            player.move(PlayerCoor.Down);
             return;
         }
         if(LEFT){
-            player.move(-1,0);
+            player.move(PlayerCoor.Left);
             return;
         }
         if(RIGHT){
-            player.move(1,0);
+            player.move(PlayerCoor.Right);
             return;
         }
     }
