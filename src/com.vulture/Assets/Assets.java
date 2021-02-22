@@ -3,7 +3,6 @@ package com.vulture.Assets;
 import com.badlogic.gdx.math.GridPoint2;
 import com.vulture.entity.Map;
 import com.vulture.entity.Player;
-import com.vulture.entity.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class Assets {
 
         for (GridPoint2 p : a.getTiles()) {
 
-            map.getTile(a.getX()+p.x , a.getY()+p.y).setAsset();
+            map.getTile(a.getX()+p.x , a.getY()+p.y).setAssets(a);
 
         }
         objects.add(a);
@@ -44,8 +43,8 @@ public class Assets {
             a.update(delta);
         }
     }
-    public Tile getMap() {
-        return map;
+    public Map getMap() {
+        return  map;
     }
 }
 
