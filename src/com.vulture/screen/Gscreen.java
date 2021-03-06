@@ -8,78 +8,85 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.vulture.App;
 import com.vulture.Assets.Assets;
 import com.vulture.InputHandler.Control;
-import com.vulture.entity.CameraViewPlayer;
-import com.vulture.entity.Ground;
-import com.vulture.entity.Map;
-import com.vulture.entity.Player;
-import com.vulture.entity.Animations;
+import com.vulture.entity.*;
 
 public class Gscreen extends OtherScreenStuff {
-
     private Control control;
     private CameraViewPlayer camera;
     private SpriteBatch batch;// this is going to reduce so much work
     private Player player;
+    private Enemy enemy;
     private Texture texture;// i'm going to use it in order to load and render the sprite
+    private Texture texture2;
     private Texture textureGRASS_1;
     private Texture textureGRASS_2;
     private Map map;
     private Assets world;
     private AssetsRendering worldRenderer;
-
     public static final int TILE=64;
     public static final int SCALE=1;
     public static final int SCALE_TILE=TILE*SCALE;
     public Gscreen(App app) {
         super(app);
         texture = new Texture("rsc/gg.png");
+        texture2=new Texture("rsc/enemyPositions/back_0.png");
         textureGRASS_1=new Texture("rsc/groundtiles.png");
-        textureGRASS_2=new Texture("rsc/unnamed.png");
-
+        textureGRASS_2=new Texture("rsc/tile.png");
         TextureAtlas atlas=app.getAssetManager().get("rsc/playerTexture/tex.atlas",TextureAtlas.class);
-        Animations animations=new Animations(
-                atlas.findRegion("front"),
-                atlas.findRegion("back"),
-                atlas.findRegion("left"),
-                atlas.findRegion("right"),
-               new Animation(0.3f/2f,atlas.findRegions("front"), Animation.PlayMode.LOOP_PINGPONG),
-                new Animation(0.3f/2f,atlas.findRegions("back"), Animation.PlayMode.LOOP_PINGPONG),
-                new Animation(0.3f/2f,atlas.findRegions("left"), Animation.PlayMode.LOOP_PINGPONG),
-                new Animation(0.3f/2f,atlas.findRegions("right"), Animation.PlayMode.LOOP_PINGPONG)
+       // TextureAtlas atlases=app.getAssetManager().get("rsc/enemyTexture/texture.atlas",TextureAtlas.class);
+        /*
+        Animations animations2=new Animations(
+
+                atlases.findRegion("back"),
+                atlases.findRegion("front"),
+                atlases.findRegion("left"),
+                atlases.findRegion("right"),
+               new Animation(0.3f/2f,atlases.findRegions("back"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlases.findRegions("front"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlases.findRegions("left"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlases.findRegions("right"), Animation.PlayMode.LOOP_PINGPONG)
                 );
 
+         */
+        Animations animations=new Animations(
+                atlas.findRegion("back"),
+                atlas.findRegion("front"),
+                atlas.findRegion("left"),
+                atlas.findRegion("right"),
+                new Animation(0.3f/2f,atlas.findRegions("back"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlas.findRegions("front"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlas.findRegions("left"), Animation.PlayMode.LOOP_PINGPONG),
+                new Animation(0.3f/2f,atlas.findRegions("right"), Animation.PlayMode.LOOP_PINGPONG)
+        );
         map=new Map(22,17);
         batch= new SpriteBatch();
-
         player=new Player(0,0,map,animations);
-        control=new Control(player);
+        enemy=new Enemy(0,0,map,texture2);
+        control=new Control(player,enemy);
         camera =new CameraViewPlayer();
         world=new Assets(100,100);
        // worldRenderer=new AssetsRendering(getApp().getAssetManager,world);
     }
     public void dispose(){
-
+        this.dispose();
     }
     public void hide(){
-
     }
 // each time a frame passes show fires that s why i think it s the best place to get input from
     @Override
     public void show() {
-
         Gdx.input.setInputProcessor(control);
     }
 
     @Override
     public void render(float f) {
-        map.updateMap(f);
         control.update(f);
         player.updateWorldCord(f);// this is to update the player each frame
+        //enemy.updateWorldCord(f);
 
         world.update(f);
         //camera.cameraUpdate(player.getX()+0.5f,player.getY()+0.5f);//for it to be centred around the player OR THE CAMERA
         //after testing it i figured that if we centered the camera on the world cordinates it looks way cooler than the player
-
         camera.cameraUpdate(player.getxWorld()+0.5f,player.getyWorld()+0.5f);
         batch.begin();
         double worldStartX=Gdx.graphics.getWidth()/2 - camera.getxScroll()*SCALE_TILE;//what this means is that given a cordinates of where the camera we can keep update it constantly for it to follow and be centred around the player
@@ -98,10 +105,10 @@ public class Gscreen extends OtherScreenStuff {
                 batch.draw(tex, (float) (worldStartX+x * SCALE_TILE), (float) (worldStartY+y*SCALE_TILE), SCALE_TILE, SCALE_TILE);
             }
         }
-//        batch.draw(texture, (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE* 3 ,TILE *2.75f);
+        batch.draw(enemy.getTexture(), (float) (worldStartX +enemy.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * enemy.getyWorld()),TILE ,TILE );
 
         batch.draw(player.getSprite(), (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE* 3 ,TILE *2.5f);
-
+        //batch.draw(enemy.getSprite(), (float) (worldStartX +enemy.getxWorld()+20 * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * enemy.getyWorld()+255*4),TILE* 3 ,TILE *2.5f);
         batch.end();
     }
 
