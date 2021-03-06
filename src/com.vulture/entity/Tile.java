@@ -8,13 +8,14 @@ import com.vulture.Assets.AssetStuff;
 public class Tile  {
     private Ground gr;
     private Player player;
+    private Enemy enemy;
     private AssetStuff assets;
   //  private AssetStuff objects;
     public Tile(Ground gr){
         this.gr = gr;
     }
-    public  Ground getGround(){
-        return gr;
+    public  Ground getGround()
+    { return gr;
     }
     public void setGround(Ground gr){
           this.gr=gr;
@@ -24,6 +25,12 @@ public class Tile  {
     }
     public void setPlayer(Player player){
         this.player= player;
+    }
+    public Enemy getEnemy(){
+        return enemy;
+    }
+    public void setEnemy(Enemy enemy){
+        this.enemy=enemy;
     }
 
     public void setAssets(AssetStuff assets) {
