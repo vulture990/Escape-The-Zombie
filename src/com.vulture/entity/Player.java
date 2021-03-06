@@ -1,10 +1,11 @@
 package com.vulture.entity;
-
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import com.vulture.Assets.AssetStuff;
 
-public class Player {
-    public  final static float ANIMATION_TIMMING=0.17f;//
+public class Player implements Sortable {
+    public  final static float ANIMATION_TIMMING=0.1f;//
     private  PlayerCoor front;
     private int x;
     private int y;
@@ -14,10 +15,11 @@ public class Player {
     private  int xStart,yStart;//to determine the time when the aniomation started
     private int xFinish,yFinish;
     private PlayerActions state;
-    private long tWalking;
+    private float tWalking;
     private Animations animation;
-    private float tAnimation=0.25f;//the time the animation going to take
+    private float tAnimation=0.3f;//the time the animation going to take
     private boolean tweak;
+    private Texture texture;
     public Player(int x,int y,Map map,Animations animation){//it willbe better not store the cordinates alone in enum to handle the input and the overloading at each time
         this.x=x;
         this.y=y;
@@ -28,7 +30,6 @@ public class Player {
         this.state=PlayerActions.STANDING;// as it the most natural way to make it
         this.front=PlayerCoor.Up;//charchter looking at us
         this.animation=animation;
-
     }
     public float getxWorld(){
         return this.xWorld;
@@ -47,7 +48,7 @@ public class Player {
             return false;
         }
 
-        if (x + coordinates.getDx() > map.getW() || x + coordinates.getDx() < 0 || y + coordinates.getDy() < 0 || y + coordinates.getDy() > map.getH()) {
+        if (x + coordinates.getDx() > map.getW()-1 || x + coordinates.getDx() < 0 || y + coordinates.getDy() < 0 || y + coordinates.getDy() > map.getH()-1) {
             //SETTING BOUNDARIES CONDITION
             return false;//meaning you are out of bounds
         }
@@ -104,9 +105,8 @@ public class Player {
     }
     // now comes the tweening part where we gonna update x,y world positons
     public void updateWorldCord(float DELTA ){
-
-            tWalking+=DELTA;
-            tAnimation+=DELTA;//meaning the animating going to update each frame once (time between one frame and an other is DELTA)
+            tWalking+=(float)DELTA;
+            tAnimation+=(float)DELTA ;//meaning the animating going to update each frame once (time between one frame and an other is DELTA)
             // Here is the tweening to keep updating world cordinate at each frame
             xWorld= Interpolation.pow2.apply(xStart,xFinish,tAnimation/ANIMATION_TIMMING);
             yWorld= Interpolation.pow2.apply(yStart,yFinish,tAnimation/ANIMATION_TIMMING);
@@ -120,7 +120,7 @@ public class Player {
                 }
             }
             else{
-                tWalking=0;
+                tWalking=0f;
             }
             tweak=false;
         }
@@ -132,6 +132,23 @@ public class Player {
     public int getY(){
         return y;
     }
+
+    @Override
+    public float getWorldX() {
+        return 0;
+    }
+
+    @Override
+    public float getWorldY() {
+        return 0;
+    }
+
+    public  void setTexture(Texture t){
+        this.texture=t;
+    }
+    public Texture getTexture(){
+        return this.texture;
+    }
     public TextureRegion getSprite(){
         if(state==PlayerActions.STANDING){
             return animation.getStanding(front);
@@ -142,5 +159,15 @@ public class Player {
         }
         //we gonna discuss other cases as we go along
         return animation.getStanding(front);
+    }
+
+    @Override
+    public float getSizeX() {
+        return 0;
+    }
+
+    @Override
+    public float getSizeY() {
+        return 0;
     }
 }
