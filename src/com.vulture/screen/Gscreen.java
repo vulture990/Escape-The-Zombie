@@ -9,6 +9,7 @@ import com.vulture.App;
 import com.vulture.Assets.Assets;
 import com.vulture.InputHandler.Control;
 import com.vulture.entity.*;
+import org.w3c.dom.Text;
 
 public class Gscreen extends OtherScreenStuff {
     private Control control;
@@ -59,9 +60,10 @@ public class Gscreen extends OtherScreenStuff {
                 new Animation(0.3f/2f,atlas.findRegions("right"), Animation.PlayMode.LOOP_PINGPONG)
         );
         map=new Map(22,17);
+        map.init();
         batch= new SpriteBatch();
         player=new Player(0,0,map,animations);
-        enemy=new Enemy(0,0,map,texture2);
+        enemy=new Enemy(20,15,map,texture2,player);
         control=new Control(player,enemy);
         camera =new CameraViewPlayer();
         world=new Assets(100,100);
@@ -82,8 +84,7 @@ public class Gscreen extends OtherScreenStuff {
     public void render(float f) {
         control.update(f);
         player.updateWorldCord(f);// this is to update the player each frame
-        //enemy.updateWorldCord(f);
-
+        enemy.update(f, enemy.enemyTile, player.playerTile,map);
         world.update(f);
         //camera.cameraUpdate(player.getX()+0.5f,player.getY()+0.5f);//for it to be centred around the player OR THE CAMERA
         //after testing it i figured that if we centered the camera on the world cordinates it looks way cooler than the player
@@ -105,7 +106,8 @@ public class Gscreen extends OtherScreenStuff {
                 batch.draw(tex, (float) (worldStartX+x * SCALE_TILE), (float) (worldStartY+y*SCALE_TILE), SCALE_TILE, SCALE_TILE);
             }
         }
-        batch.draw(enemy.getTexture(), (float) (worldStartX +enemy.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * enemy.getyWorld()),TILE ,TILE );
+
+        batch.draw(enemy.getTexture(),(float)(worldStartX + enemy.getX() * SCALE_TILE),(float)(worldStartY + SCALE_TILE * enemy.getY()), TILE, TILE);
 
         batch.draw(player.getSprite(), (float) (worldStartX +player.getxWorld() * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * player.getyWorld()),TILE* 3 ,TILE *2.5f);
         //batch.draw(enemy.getSprite(), (float) (worldStartX +enemy.getxWorld()+20 * SCALE_TILE),(float) ( worldStartY+ SCALE_TILE * enemy.getyWorld()+255*4),TILE* 3 ,TILE *2.5f);
