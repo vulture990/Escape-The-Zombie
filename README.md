@@ -6,3 +6,4 @@ The basic Concept  of this Scuffed 2d game is to escape a running Zombie that s 
  - Optimize the A* pathfinding Algorithm and getting to fit into the game design efficently 
  - Adding SoundEffects
 ### Preview On how it Looks Now:
+![](https://github.com/vulture990/Escape-The-Zombie/blob/main/rsc/ezgif-6-f1201061fbfe.gif)
